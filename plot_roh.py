@@ -151,7 +151,7 @@ def plotROH( files, ax = None ):
         df[ 'yo' ] = yo
 
         with open( '%s.picle' % chromo, 'wb' ) as f:
-            picle.dump( df, f )
+            pickle.dump( df, f )
         print( 'Data saved to %s.pickle' % chromo )
 
 def main( ):
