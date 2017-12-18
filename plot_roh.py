@@ -88,7 +88,7 @@ def plotROH( files, ax = None ):
 
     # img = np.zeros( shape = (len(chromosomes), maxlength ) )
     for i, chromo in enumerate( chromosomes ):
-        df = pd.DataFrame( )
+        df = { }
         print( 'CHROMOSOME : %s' % chromo )
         dataWithFs = chromosomes[ chromo ]
         df[ 'data_with_fs' ] = dataWithFs
@@ -148,7 +148,9 @@ def plotROH( files, ax = None ):
 
         df[ 'xo' ] = xo
         df[ 'yo' ] = yo
-        df.to_pickle( '%s.pickle' % chromo )
+
+        with open( '%s.picle' % chromo, 'wb' ) as f:
+            picle.dump( df, f )
         print( 'Data saved to %s.pickle' % chromo )
 
 def main( ):
