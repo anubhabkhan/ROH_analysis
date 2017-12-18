@@ -10,7 +10,7 @@ __maintainer__       = "Dilawar Singh"
 __email__            = "dilawars@ncbs.res.in"
 __status__           = "Development"
 
-background_ = True
+background_ = False
 
 import sys
 import os
@@ -25,6 +25,7 @@ except ImportError as e:
 
 if not background_:
     import matplotlib as mpl
+    mpl.use( 'Agg' )
     import matplotlib.cm as cm
     import matplotlib.pyplot as plt
     from matplotlib.colors import Normalize
