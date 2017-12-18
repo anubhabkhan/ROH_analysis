@@ -8,4 +8,4 @@
 
 export DISPLAY=:0.0
 
-python /home/uramakri/anubhabk/RTR_data/./plot_roh.py /home/uramakri/anubhabk/RTR_data/ROH_files/
+python ./plot_roh.py ./ROH_files

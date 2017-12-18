@@ -17,7 +17,11 @@ import os
 import pandas as pd
 import numpy as np
 import glob
-import cPickle as pickle
+
+try:
+    import cPickle as pickle
+except ImportError as e:
+    import pickle
 
 if not background_:
     import matplotlib as mpl
@@ -82,17 +86,19 @@ def plotROH( files, ax = None ):
             cdata = data[ data[ 'Chromosome' ] == chromo ]
             chromosomes[ chromo ].append( (f, cdata ) ) 
 
-    df = pd.DataFrame( )
     # img = np.zeros( shape = (len(chromosomes), maxlength ) )
     for i, chromo in enumerate( chromosomes ):
+        df = pd.DataFrame( )
         print( 'CHROMOSOME : %s' % chromo )
         dataWithFs = chromosomes[ chromo ]
         df[ 'data_with_fs' ] = dataWithFs
 
         ytick, yticklabel = [], []
-        plt.figure( figsize=(12, 2*len(dataWithFs)) )
 
-        ax1 = plt.subplot( 211 )
+        if not background_:
+            plt.figure( figsize=(12, 2*len(dataWithFs)) )
+            ax1 = plt.subplot( 211 )
+
         maxX, allSegs = 0, [ ]
         for ii, (f, cdata) in enumerate(dataWithFs):
             print( '   - Individual %s' % f )
@@ -103,12 +109,16 @@ def plotROH( files, ax = None ):
             ff = os.path.basename( f ).split( '.')[0]
             yticklabel.append( r'%s' % ff )
             for x1, x2 in segments:
-                plt.plot( [x1, x2], [y, y], color = getColor( ii)  )
+                if not background_:
+                    plt.plot( [x1, x2], [y, y], color = getColor( ii)  )
                 if x2 > maxX:
                     maxX = x2
 
-        plt.xlabel( r'Position' )
-        plt.yticks( ytick, yticklabel ) 
+        if not background_:
+            plt.xlabel( r'Position' )
+            plt.yticks( ytick, yticklabel ) 
+
+        df[ 'all_segments' ] = allSegs
 
         # Compute the overlap
         yo = [ ]
@@ -124,16 +134,22 @@ def plotROH( files, ax = None ):
 
             yo.append( o )
 
-        ax2 = plt.subplot( 212, sharex = ax1 )
-        plt.plot( xo, yo )
-        plt.title( 'Overlap' )
+        if not background_:
+            ax2 = plt.subplot( 212, sharex = ax1 )
+            plt.plot( xo, yo )
+            plt.title( 'Overlap' )
 
-        plt.suptitle( r'Chormosome %s' % chromo )
-        plt.tight_layout( )
-        outfile = os.path.join( imgDir, '%s.png' % chromo )
-        plt.savefig( outfile )
-        plt.close( )
-        print( 'Saved to %s' % outfile )
+            plt.suptitle( r'Chormosome %s' % chromo )
+            plt.tight_layout( )
+            outfile = os.path.join( imgDir, '%s.png' % chromo )
+            plt.savefig( outfile )
+            plt.close( )
+            print( 'Saved to %s' % outfile )
+
+        df[ 'xo' ] = xo
+        df[ 'yo' ] = yo
+        df.to_pickle( '%s.pickle' % chromo )
+        print( 'Data saved to %s.pickle' % chromo )
 
 def main( ):
     datadir = sys.argv[1]
